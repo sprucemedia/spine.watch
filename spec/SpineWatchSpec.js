@@ -7,6 +7,35 @@ describe("Spine.Watch", function() {
 		Model.include(Spine.Watch);
 	});
 
+	describe("array property assignment", function() {
+		var spy1, spy2, obj;
+
+		beforeEach(function() {
+			spy1 = sinon.spy();
+			spy2 = sinon.spy();
+			obj = new Model();
+
+			Model.bind("update[prop1]", spy1);
+			Model.bind("update[prop2]", spy2);
+		});
+
+		it("allows new arrays", function() {
+			obj.prop1 = [];
+			expect(obj.prop1.length).toBe(0);
+			obj.prop1 = [1, 2, 3];
+			expect(obj.prop1.length).toBe(3);
+			expect(obj.prop1.indexOf(2)).not.toBe(-1);
+		});
+
+		it("and triggers event when new array assigned", function() {
+			obj.prop1 = [1, 2, 3];
+			runs(function() {
+				expect(spy1.called).toBe(true);
+				expect(spy2.called).toBe(false);
+			}, 250);
+		});
+	});
+
 	describe("binding to collection", function() {
 		var spy1, spy2, obj;
 
